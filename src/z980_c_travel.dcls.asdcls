@@ -1,0 +1,7 @@
+@EndUserText.label: 'Access Control for Z980_C_TRAVEL'
+@MappingRole: true
+define role Z980_C_TRAVEL {
+  grant select on Z980_C_TRAVEL
+    where INHERITING CONDITIONS FROM ENTITY Z980_R_TRAVEL
+      REPLACING { ROOT WITH _BaseEntity };
+}

@@ -7,8 +7,8 @@
      description:    { value: 'Description' }
                }
      }
-annotate view Z980_C_TRAVEL
-    with 
+
+annotate view Z980_C_TRAVEL with
 {
   @UI.facet: [ { id:            'Travel',
                  purpose:       #STANDARD,
@@ -18,8 +18,9 @@ annotate view Z980_C_TRAVEL
              ]
 
   @UI: {
-         identification: [ { position: 10, importance: #LOW } ]
-       }
+  lineItem:       [ { position: 10, importance: #HIGH } ],
+  identification: [ { position: 10, importance: #LOW } ]
+  }
   AgencyId;
 
   @UI: {
@@ -63,13 +64,15 @@ annotate view Z980_C_TRAVEL
   Duration;
 
   @UI: {
-      lineItem: [
-          { position: 60, importance: #HIGH }, // Show Status as a normal field
-          { position: 70, importance: #HIGH, type: #FOR_ACTION, dataAction: 'cancel_travel', label: 'Cancel the Travel' } // Show as action button
-      ],
-      identification: [ { position: 70, importance: #HIGH } ]
-  }
-  Status;
+    lineItem:       [ { position: 10, importance: #HIGH },
+                      { type:       #FOR_ACTION,
+                        dataAction: 'cancel_travel',
+                        label:      'Cancel the Travel'
+                      }
+                    ],
+    identification: [ { position: 70, importance: #HIGH } ]
+     }
+Status;
 
 
   @UI.hidden: true
@@ -80,5 +83,8 @@ annotate view Z980_C_TRAVEL
 
   @UI.hidden: true
   LastChangedAt;
+
+  @UI.hidden: true
+  _BaseEntity;
 
 }

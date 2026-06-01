@@ -1,6 +1,6 @@
 @AbapCatalog.viewEnhancementCategory: [ #NONE ]
 
-@AccessControl.authorizationCheck: #NOT_REQUIRED
+@AccessControl.authorizationCheck: #MANDATORY
 
 @EndUserText.label: 'Flight Travel (Data Model)'
 

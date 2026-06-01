@@ -1,0 +1,11 @@
+@EndUserText: {
+  label: 'Flight Travel (Service Definition)'
+}
+@ObjectModel: {
+  leadingEntity: {
+    name: 'Z980_C_TRAVEL'
+  }
+}
+define service ZUI_980TRAVEL_O2 {
+  expose Z980_C_TRAVEL as Travel;
+}

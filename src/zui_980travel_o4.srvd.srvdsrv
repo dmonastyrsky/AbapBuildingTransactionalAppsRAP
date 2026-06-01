@@ -1,0 +1,12 @@
+@EndUserText: {
+  label: 'Service Definition for Z980 Travel'
+}
+@ObjectModel: {
+  leadingEntity: {
+    name: 'Z980_C_TRAVEL'
+  }
+}
+define service ZUI_980TRAVEL_O4
+  provider contracts odata_v4_ui {
+  expose Z980_C_TRAVEL as Travel;
+}

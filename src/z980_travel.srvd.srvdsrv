@@ -1,4 +1,0 @@
-@EndUserText.label: 'Flight Travel (Service Definition)'
-define service Z980_TRAVEL {
-  expose Z980_C_TRAVEL;
-}

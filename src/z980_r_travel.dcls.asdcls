@@ -1,0 +1,6 @@
+@EndUserText.label: 'Access Control for Z980_R_TRAVEL'
+@MappingRole: true
+define role Z980_R_TRAVEL {
+  grant select on Z980_R_TRAVEL
+    where true;
+}
