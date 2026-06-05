@@ -2,5 +2,10 @@
 @MappingRole: true
 define role Z980_R_TRAVEL {
   grant select on Z980_R_TRAVEL
-    where true;
+    where 
+        true 
+        or (AgencyId) = aspect pfcg_auth(
+                      Z980_AGCY, 
+                      Z980_AGCID,
+                      ACTVT = '03');
 }

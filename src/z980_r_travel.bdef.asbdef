@@ -10,9 +10,12 @@ etag master LastChangedAt
   create ( authorization : global );
   update;
   delete;
-  field ( readonly ) AgencyId, TravelId;
+  field ( readonly ) Status, LocalLastChangedAt, LocalLastChangedBy, Duration;
+  field ( readonly : update, mandatory : create ) AgencyId, TravelId;
+  field ( mandatory )  Description, CustomerId, BeginDate, EndDate;
 
   action cancel_travel;
+  determination set_initial_status on modify { create; }
 
   mapping for z980_travel corresponding
     {

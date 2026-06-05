@@ -23,7 +23,7 @@
        <SERVICE_CONTENT>
         <item>
          <SERVICE_VERSION>0001</SERVICE_VERSION>
-         <RELEASE_STATE>RELEASED</RELEASE_STATE>
+         <RELEASE_STATE>NOT_RELEASED</RELEASE_STATE>
          <SRVD_REF>
           <URI>/sap/bc/adt/ddic/srvd/sources/zui_980travel_o2</URI>
           <TYPE>SRVD/SRV</TYPE>

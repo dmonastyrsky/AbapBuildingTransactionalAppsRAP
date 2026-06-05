@@ -7,10 +7,13 @@
 ],
 "ASSOCIATED":
 [
+"/DMO/I_CUSTOMER",
 "Z980_R_TRAVEL"
 ],
 "BASE":
-[],
+[
+"Z980_R_TRAVEL"
+],
 "ANNO_REF":
 [],
 "SCALAR_FUNCTION":

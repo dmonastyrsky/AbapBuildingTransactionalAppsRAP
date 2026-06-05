@@ -13,7 +13,7 @@ CLASS zcm_980_travel DEFINITION
     " Exception text constants mapped to T100 messages
     CONSTANTS:
       BEGIN OF already_canceled,
-        msgid TYPE symsgid      VALUE 'ZMS_S4D437',   " Your custom message class from SE91
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',   " Your custom message class from SE91
         msgno TYPE symsgno      VALUE '001',          " Message number without leading spaces
         attr1 TYPE scx_attrname VALUE 'MV_TRAVEL_ID', " Points to the variable below to replace &1
         attr2 TYPE scx_attrname VALUE '',
@@ -22,13 +22,13 @@ CLASS zcm_980_travel DEFINITION
       END OF already_canceled .
 
     " Context data placeholder for dynamic message text
-    DATA mv_travel_id TYPE string .
+    DATA mv_travel_id TYPE /dmo/travel_id .
 
     METHODS constructor
       IMPORTING
         textid       LIKE if_t100_message=>t100key          OPTIONAL
         severity     LIKE if_abap_behv_message~m_severity OPTIONAL
-        iv_travel_id TYPE string                            OPTIONAL.
+        iv_travel_id TYPE /dmo/travel_id                            OPTIONAL.
 
   PROTECTED SECTION.
   PRIVATE SECTION.

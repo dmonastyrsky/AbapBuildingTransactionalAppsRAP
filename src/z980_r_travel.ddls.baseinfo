@@ -3,10 +3,13 @@
 {
 "FROM":
 [
+"/DMO/I_CUSTOMER",
 "Z980_TRAVEL"
 ],
 "ASSOCIATED":
-[],
+[
+"/DMO/I_CUSTOMER"
+],
 "BASE":
 [],
 "ANNO_REF":
