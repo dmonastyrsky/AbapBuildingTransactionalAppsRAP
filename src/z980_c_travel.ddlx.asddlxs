@@ -18,16 +18,17 @@ annotate view Z980_C_TRAVEL with
              ]
 
   @UI: {
-  lineItem:       [ { position: 10, importance: #HIGH } ],
-  identification: [ { position: 10, importance: #LOW } ]
-  }
-  AgencyId;
-
-  @UI: {
-         identification: [ { position: 20, importance: #HIGH } ],
-         selectionField: [ { position: 10  }]
+         lineItem:       [ { position: 12, importance: #HIGH } ],
+         identification: [ { position: 15, importance: #HIGH } ],
+         selectionField: [ { position: 1  }]
        }
   TravelId;
+  
+  @UI: {
+  lineItem:       [ { position: 15, importance: #HIGH } ],
+  identification: [ { position: 20, importance: #LOW } ]
+  }
+  AgencyId;
 
   @UI: {
          lineItem:       [ { position: 20, importance: #HIGH } ],

@@ -9,8 +9,10 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS cancel_travel FOR MODIFY
       IMPORTING keys FOR ACTION Travel~cancel_travel.
-    METHODS set_initial_status FOR DETERMINE ON MODIFY
-      IMPORTING keys FOR Travel~set_initial_status.
+    METHODS determineStatus FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR Travel~determineStatus.
+    METHODS earlynumbering_create FOR NUMBERING
+      IMPORTING entities FOR CREATE Travel.
 
 ENDCLASS.
 
@@ -94,32 +96,47 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD set_initial_status.
-    " Read the current status of the newly created travel instances
+METHOD determineStatus.
+    " 1. Fast read of the current status from the transactional buffer
     READ ENTITIES OF z980_r_travel IN LOCAL MODE
       ENTITY Travel
         FIELDS ( Status ) WITH CORRESPONDING #( keys )
       RESULT DATA(lt_travels).
 
-    " Internal table to store instances requiring default status update
+    " 2. Performance Best Practice: drop instances where status is already set
+    DELETE lt_travels WHERE Status IS NOT INITIAL.
+    CHECK lt_travels IS NOT INITIAL.
+
+    " 3. Prepare dedicated local table for bulk update to prevent memory overhead
     DATA lt_travel_update TYPE TABLE FOR UPDATE z980_r_travel\\Travel.
 
     LOOP AT lt_travels ASSIGNING FIELD-SYMBOL(<travel>).
-      " If the status field is empty, assign the default 'O' (Open) status
-      IF <travel>-Status IS INITIAL.
-        APPEND VALUE #( %tky   = <travel>-%tky
-                        Status = 'O' ) TO lt_travel_update.
-      ENDIF.
+      APPEND VALUE #( %tky   = <travel>-%tky
+                      Status = 'N' ) TO lt_travel_update.
     ENDLOOP.
 
-    " Apply mass update to set the initial status in the database buffer
+    " 4. Execute single bulk mass update in the database buffer
     IF lt_travel_update IS NOT INITIAL.
       MODIFY ENTITIES OF z980_r_travel IN LOCAL MODE
         ENTITY Travel
-          UPDATE FIELDS ( Status ) WITH lt_travel_update.
+          UPDATE FIELDS ( Status ) WITH lt_travel_update
+      REPORTED DATA(lt_update_reported).
+
+      " Fast flat mapping of identical RAP structures without expensive DEEP processing
+      reported-travel = CORRESPONDING #( lt_update_reported-travel ).
     ENDIF.
   ENDMETHOD.
 
+
+  METHOD earlynumbering_create.
+    DATA(agencyid) = zcl_980_travel_provider=>get_agency_by_user( sy-uname ).
+    mapped-travel = CORRESPONDING #( entities ).
+
+    LOOP AT mapped-travel ASSIGNING FIELD-SYMBOL(<mapping>).
+        <mapping>-AgencyId = agencyid.
+        <mapping>-TravelId = zcl_980_travel_provider=>get_next_travelid( ).
+    ENDLOOP.
+  ENDMETHOD.
 
 ENDCLASS.
 

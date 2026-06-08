@@ -2,6 +2,94 @@
 *"* local helper classes, interface definitions and type
 *"* declarations
 
+CLASS lcl_travel_provider DEFINITION.
+
+  PUBLIC SECTION.
+    CLASS-METHODS get_agency_by_user
+      IMPORTING i_user             TYPE syuname
+      RETURNING VALUE(r_agency_id) TYPE /dmo/agency_id.
+
+    CLASS-METHODS init_next_travelid
+      IMPORTING i_tabname TYPE tabname.
+
+    CLASS-METHODS get_next_travelid
+      RETURNING VALUE(r_travel_id) TYPE /dmo/travel_id.
+    CLASS-METHODS get_next_customer_id
+      RETURNING VALUE(r_customer_id) TYPE /dmo/customer_id.
+
+    CLASS-METHODS init_reference_data.
+
+  PRIVATE SECTION.
+    CLASS-DATA next_travel_id TYPE /dmo/travel_id.
+    CLASS-DATA customer_ids TYPE STANDARD TABLE OF /dmo/customer_id WITH EMPTY KEY.
+    CLASS-DATA customer_index TYPE i.
+
+ENDCLASS.
+
+
+CLASS lcl_travel_provider IMPLEMENTATION.
+  METHOD get_agency_by_user.
+    " TODO: parameter I_USER is never used (ABAP cleaner)
+
+    " Free trial replacement for /lrn/cl_s4d437_model=>get_agency_by_user
+    " ALTERNATIVE: Fetch an existing agency ID from the standard SAP demo table, or fallback to default
+    SELECT SINGLE agency_id FROM /dmo/agency INTO @r_agency_id.
+    IF sy-subrc <> 0.
+      r_agency_id = '070015'.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD init_next_travelid.
+    SELECT SINGLE
+      FROM (i_tabname)
+      FIELDS MAX( travel_id )
+      INTO @next_travel_id.
+
+    IF next_travel_id IS INITIAL OR next_travel_id < '90000000'.
+      next_travel_id = '90000000'.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_next_travelid.
+    next_travel_id += 1.
+    r_travel_id = next_travel_id.
+  ENDMETHOD.
+
+  METHOD init_reference_data.
+
+    IF customer_ids IS INITIAL.
+      SELECT FROM /dmo/customer
+        FIELDS customer_id
+        ORDER BY customer_id
+        INTO TABLE @customer_ids.
+    ENDIF.
+
+  ENDMETHOD.
+
+  METHOD get_next_customer_id.
+
+    IF customer_ids IS INITIAL.
+      init_reference_data( ).
+    ENDIF.
+
+    IF customer_ids IS INITIAL.
+      r_customer_id = '000001'.
+      RETURN.
+    ENDIF.
+
+    customer_index += 1.
+
+    IF customer_index > lines( customer_ids ).
+      customer_index = 1.
+    ENDIF.
+
+    r_customer_id = customer_ids[ customer_index ].
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+
 CLASS lcl_dbtable DEFINITION.
 
   PUBLIC SECTION.
@@ -125,7 +213,8 @@ CLASS lcl_dbtable IMPLEMENTATION.
 
     " DATA(lv_agency)   =  CAST /lrn/cl_s4d437_model=>get_agency_by_user( sy-uname ).
 
-    DATA(lv_agency) = zcl_980_travel_provider=>get_agency_by_user( sy-uname ).
+    DATA(lv_agency) = lcl_travel_provider=>get_agency_by_user( sy-uname ).
+    lcl_travel_provider=>init_reference_data( ).
 
     GET TIME STAMP FIELD DATA(lv_changed_at).
 
@@ -139,32 +228,32 @@ CLASS lcl_dbtable IMPLEMENTATION.
                                    local_last_changed_at = lv_changed_at
                                    last_changed_at       = lv_changed_at
                                    ( agency_id   = lv_agency
-                                     travel_id   = zcl_980_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
+                                     travel_id   = lcl_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
                                      description = 'Travel in the past'
-                                     customer_id = zcl_980_travel_provider=>get_next_customer_id( )
+                                     customer_id = lcl_travel_provider=>get_next_customer_id( )
                                      begin_date  = today - 28
                                      end_date    = today - 14 )
 
 * ongoing travel
                                    ( agency_id   = lv_agency
-                                     travel_id   = zcl_980_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
+                                     travel_id   = lcl_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
                                      description = 'Travel ongoing'
-                                     customer_id = zcl_980_travel_provider=>get_next_customer_id( )
+                                     customer_id = lcl_travel_provider=>get_next_customer_id( )
                                      begin_date  = today - 7
                                      end_date    = today + 14 )
 
 * travel in the future
 
                                    ( agency_id   = lv_agency
-                                     travel_id   = zcl_980_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
+                                     travel_id   = lcl_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
                                      description = 'Travel in the future'
-                                     customer_id = zcl_980_travel_provider=>get_next_customer_id( )
+                                     customer_id = lcl_travel_provider=>get_next_customer_id( )
                                      begin_date  = today + 14
                                      end_date    = today + 28 )
 
 * travel for travel agency 070041
                                    ( agency_id   = '070041'
-                                     travel_id   = zcl_980_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
+                                     travel_id   = lcl_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
                                      description = 'Travel of travel agency 70041'
                                      customer_id = 4
                                      begin_date  = today + 18
@@ -172,9 +261,9 @@ CLASS lcl_dbtable IMPLEMENTATION.
 
 * travel for travel agency 70050
                                    ( agency_id   = '070050'
-                                     travel_id   = zcl_980_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
+                                     travel_id   = lcl_travel_provider=>get_next_travelid( ) "/lrn/cl_s4d437_model=>get_next_travelid( )
                                      description = 'Travel of agency 70050'
-                                     customer_id = zcl_980_travel_provider=>get_next_customer_id( )
+                                     customer_id = lcl_travel_provider=>get_next_customer_id( )
                                      begin_date  = today + 14
                                      end_date    = today + 21 ) ).
 

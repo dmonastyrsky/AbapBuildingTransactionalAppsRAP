@@ -6,16 +6,25 @@ persistent table z980_travel
 lock master
 authorization master ( instance )
 etag master LastChangedAt
+early numbering
 {
   create ( authorization : global );
   update;
   delete;
+
+//    side effects
+//  {
+//    field Description affects field ( TravelId, AgencyId );
+//  }
+
+
   field ( readonly ) Status, LocalLastChangedAt, LocalLastChangedBy, Duration;
-  field ( readonly : update, mandatory : create ) AgencyId, TravelId;
+//  field ( readonly : update, mandatory : create ) AgencyId, TravelId;
+  field ( readonly ) AgencyId, TravelId;
   field ( mandatory )  Description, CustomerId, BeginDate, EndDate;
 
   action cancel_travel;
-  determination set_initial_status on modify { create; }
+  determination determineStatus on modify { create; }
 
   mapping for z980_travel corresponding
     {
