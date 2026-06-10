@@ -13,22 +13,74 @@ CLASS zcm_980_travel DEFINITION
     " Exception text constants mapped to T100 messages
     CONSTANTS:
       BEGIN OF already_canceled,
-        msgid TYPE symsgid      VALUE 'ZCM_S4D437',   " Your custom message class from SE91
-        msgno TYPE symsgno      VALUE '001',          " Message number without leading spaces
-        attr1 TYPE scx_attrname VALUE 'MV_TRAVEL_ID', " Points to the variable below to replace &1
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '001',
+        attr1 TYPE scx_attrname VALUE 'TRAVEL_ID',  " Points to travel_id attribute
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF already_canceled .
+      END OF already_canceled,
 
-    " Context data placeholder for dynamic message text
-    DATA mv_travel_id TYPE /dmo/travel_id .
+      BEGIN OF field_empty,
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '002',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF field_empty,
+
+      BEGIN OF customer_not_exist,
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '003',
+        attr1 TYPE scx_attrname VALUE 'CUSTOMER_ID', " Points to customer_id attribute
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF customer_not_exist,
+
+      BEGIN OF begin_date_past,
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '004',
+        attr1 TYPE scx_attrname VALUE 'BEGIN_DATE',  " Fixed: Points to begin_date attribute
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF begin_date_past,
+
+      BEGIN OF end_date_past,
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '005',
+        attr1 TYPE scx_attrname VALUE 'END_DATE',    " Fixed: Points to end_date attribute
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF end_date_past,
+
+      " Fixed syntax: replaced dot with comma below to prevent compilation error
+      BEGIN OF dates_wrong_sequence,
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '006',
+        attr1 TYPE scx_attrname VALUE 'END_DATE',    " Fixed: Maps EndDate to &1
+        attr2 TYPE scx_attrname VALUE 'BEGIN_DATE',  " Fixed: Maps BeginDate to &2
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF dates_wrong_sequence.
+
+    " Clean, standard context data placeholders (Must be UPPERCASE for T100 mapping)
+    DATA travel_id   TYPE /dmo/travel_id .
+    DATA customer_id TYPE /dmo/customer_id .
+    DATA begin_date  TYPE /dmo/begin_date .
+    DATA end_date    TYPE /dmo/end_date .
 
     METHODS constructor
       IMPORTING
-        textid       LIKE if_t100_message=>t100key          OPTIONAL
-        severity     LIKE if_abap_behv_message~m_severity OPTIONAL
-        iv_travel_id TYPE /dmo/travel_id                            OPTIONAL.
+        textid      LIKE if_t100_message=>t100key          OPTIONAL
+        severity    LIKE if_abap_behv_message~m_severity OPTIONAL
+        travel_id   TYPE /dmo/travel_id                    OPTIONAL
+        customer_id TYPE /dmo/customer_id                  OPTIONAL
+        begin_date  TYPE /dmo/begin_date                   OPTIONAL
+        end_date    TYPE /dmo/end_date                     OPTIONAL.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -48,15 +100,17 @@ CLASS zcm_980_travel IMPLEMENTATION.
       if_t100_message~t100key = textid.
     ENDIF.
 
-    " Assign message severity (defaults to Error)
     IF severity IS INITIAL.
       if_abap_behv_message~m_severity = if_abap_behv_message=>severity-error.
     ELSE.
       if_abap_behv_message~m_severity = severity.
     ENDIF.
 
-    " Save dynamic context data
-    me->mv_travel_id = iv_travel_id.
+    " Save dynamic context data using clean assignment
+    me->travel_id   = travel_id.
+    me->customer_id = customer_id.
+    me->begin_date  = begin_date.  " Saved field
+    me->end_date    = end_date.    " Saved field
 
   ENDMETHOD.
 ENDCLASS.

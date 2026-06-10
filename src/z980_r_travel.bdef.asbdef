@@ -4,7 +4,7 @@ strict ( 2 );
 with draft;
 
 define behavior for Z980_R_TRAVEL alias Travel
-persistent table z980_travel
+persistent table z980_travel ##UNMAPPED_FIELD
 draft table z980_travel_d
 lock master
 total etag LastChangedAt
@@ -16,25 +16,88 @@ early numbering
   update;
   delete;
 
+  action cancel_travel;
+
   //    side effects
   //  {
   //    field Description affects field ( TravelId, AgencyId );
   //  }
 
 
-  field ( readonly ) Status, LastChangedAt, LocalLastChangedAt, LocalLastChangedBy, Duration;
+  field ( readonly ) Status, Duration, CustomerFullName, LastChangedAt, LocalLastChangedAt, LocalLastChangedBy;
   //  field ( readonly : update, mandatory : create ) AgencyId, TravelId;
   field ( readonly ) AgencyId, TravelId;
   field ( mandatory ) Description, CustomerId, BeginDate, EndDate;
 
-  action cancel_travel;
+  validation validateDescription on save
+  { create;
+    field Description;
+  }
+
+  validation validateCustomer on save
+  { create;
+    field CustomerId;
+  }
+
+  validation validateBeginDate on save
+  { create;
+    field BeginDate;
+  }
+
+  validation validateEndDate on save
+  { create;
+    field EndDate;
+  }
+
+  validation validateDateSequence on save
+  { create;
+    field BeginDate,
+    EndDate;
+  }
+
   determination determineStatus on modify { create; }
+
+  determination determineDuration on save
+  { field BeginDate,
+    EndDate;
+  }
+
+  determine action checkCustomer
+  {
+    validation validateCustomer;
+  }
+
+  determine action adjustDuration
+  {
+    validation validateBeginDate;
+    validation validateEndDate;
+    validation validateDateSequence;
+
+    determination determineDuration;
+  }
+
+  side effects
+  { determine action checkCustomer
+    executed on field CustomerId
+    affects messages;
+
+    determine action adjustDuration
+    executed on field BeginDate,
+    field EndDate
+    affects field Duration, messages; }
 
   draft action Edit;
   draft action Activate;
   draft action Discard;
   draft action Resume;
-  draft determine action Prepare;
+  draft determine action Prepare
+  {
+    validation validateDescription;
+    validation validateCustomer;
+    validation validateBeginDate;
+    validation validateEndDate;
+    validation validateDateSequence;
+  }
 
   mapping for z980_travel corresponding
     {

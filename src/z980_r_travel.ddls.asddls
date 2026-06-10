@@ -18,7 +18,7 @@ define root view entity Z980_R_TRAVEL
       concat_with_space(_Customer.FirstName, _Customer.LastName, 1) as CustomerFullName,
       begin_date                              as BeginDate,
       end_date                                as EndDate,
-      @EndUserText.label: 'Duration in Days'
+      @EndUserText.label: 'Duration (days)'
       dats_days_between(begin_date, end_date) as Duration,
       status                                  as Status,
 
