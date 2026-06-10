@@ -1,30 +1,40 @@
 managed implementation in class zbp_980_r_travel unique;
 strict ( 2 );
 
+with draft;
+
 define behavior for Z980_R_TRAVEL alias Travel
 persistent table z980_travel
+draft table z980_travel_d
 lock master
+total etag LastChangedAt
 authorization master ( instance )
-etag master LastChangedAt
+etag master LocalLastChangedAt //LastChangedAt
 early numbering
 {
   create ( authorization : global );
   update;
   delete;
 
-//    side effects
-//  {
-//    field Description affects field ( TravelId, AgencyId );
-//  }
+  //    side effects
+  //  {
+  //    field Description affects field ( TravelId, AgencyId );
+  //  }
 
 
-  field ( readonly ) Status, LocalLastChangedAt, LocalLastChangedBy, Duration;
-//  field ( readonly : update, mandatory : create ) AgencyId, TravelId;
+  field ( readonly ) Status, LastChangedAt, LocalLastChangedAt, LocalLastChangedBy, Duration;
+  //  field ( readonly : update, mandatory : create ) AgencyId, TravelId;
   field ( readonly ) AgencyId, TravelId;
-  field ( mandatory )  Description, CustomerId, BeginDate, EndDate;
+  field ( mandatory ) Description, CustomerId, BeginDate, EndDate;
 
   action cancel_travel;
   determination determineStatus on modify { create; }
+
+  draft action Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
 
   mapping for z980_travel corresponding
     {

@@ -23,7 +23,7 @@ annotate view Z980_C_TRAVEL with
          selectionField: [ { position: 1  }]
        }
   TravelId;
-  
+
   @UI: {
   lineItem:       [ { position: 15, importance: #HIGH } ],
   identification: [ { position: 20, importance: #LOW } ]
@@ -73,7 +73,7 @@ annotate view Z980_C_TRAVEL with
                     ],
     identification: [ { position: 70, importance: #HIGH } ]
      }
-Status;
+  Status;
 
 
   @UI.hidden: true
