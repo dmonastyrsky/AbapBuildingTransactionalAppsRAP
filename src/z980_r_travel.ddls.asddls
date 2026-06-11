@@ -7,7 +7,7 @@
 define root view entity Z980_R_TRAVEL
   as select from z980_travel
   association [1..1] to /DMO/I_Customer as _Customer on $projection.CustomerId = _Customer.CustomerID
-  
+  composition [0..*] of Z980_R_TRAVELITEM as _TravelItem   
 
 {
   key agency_id                               as AgencyId,
@@ -36,5 +36,6 @@ define root view entity Z980_R_TRAVEL
 
       @Semantics.systemDateTime.lastChangedAt: true
       last_changed_at                         as LastChangedAt,
-      _Customer
+      _Customer,
+      _TravelItem
 }

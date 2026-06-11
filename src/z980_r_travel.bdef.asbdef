@@ -18,11 +18,7 @@ early numbering
 
   action cancel_travel;
 
-  //    side effects
-  //  {
-  //    field Description affects field ( TravelId, AgencyId );
-  //  }
-
+  association _TravelItem { create; with draft; }
 
   field ( readonly ) Status, Duration, CustomerFullName, LastChangedAt, LocalLastChangedAt, LocalLastChangedBy;
   //  field ( readonly : update, mandatory : create ) AgencyId, TravelId;
@@ -108,6 +104,42 @@ early numbering
       EndDate            = end_date;
       CreatedAt          = created_at;
       CreatedBy          = created_by;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
+}
+
+define behavior for Z980_R_TRAVELITEM alias Item
+persistent table z980_tritem
+draft table z980_tritem_d
+authorization dependent by _Travel
+lock dependent by _Travel
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+
+  association _Travel { with draft; }
+
+  field ( readonly, numbering : managed )
+  ItemUuid;
+
+  field ( readonly )
+  AgencyId,
+  TravelId;
+
+  mapping for z980_tritem corresponding
+    {
+      ItemUuid           = item_uuid;
+      AgencyId           = agency_id;
+      TravelId           = travel_id;
+      CarrierId          = carrier_id;
+      ConnectionId       = connection_id;
+      FlightDate         = flight_date;
+      BookingId          = booking_id;
+      PassengerFirstName = passenger_first_name;
+      PassengerLastName  = passenger_last_name;
       LocalLastChangedBy = local_last_changed_by;
       LocalLastChangedAt = local_last_changed_at;
       LastChangedAt      = last_changed_at;
