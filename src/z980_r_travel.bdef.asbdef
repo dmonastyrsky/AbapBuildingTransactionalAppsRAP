@@ -93,6 +93,7 @@ early numbering
     validation validateBeginDate;
     validation validateEndDate;
     validation validateDateSequence;
+    validation Item~validateFlightDate;
   }
 
   mapping for z980_travel corresponding
@@ -128,6 +129,15 @@ etag master LocalLastChangedAt
   field ( readonly )
   AgencyId,
   TravelId;
+
+  validation validateFlightDate on save
+  { create;
+    field FlightDate;
+  }
+
+  determination determineTravelDates on save
+  { field FlightDate;
+  }
 
   mapping for z980_tritem corresponding
     {

@@ -1,3 +1,106 @@
+CLASS lhc_item DEFINITION INHERITING FROM cl_abap_behavior_handler.
+
+  PRIVATE SECTION.
+
+    METHODS validateFlightDate FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Item~validateFlightDate.
+    METHODS determineTravelDates FOR DETERMINE ON SAVE
+      IMPORTING keys FOR Item~determineTravelDates.
+
+ENDCLASS.
+
+CLASS lhc_item IMPLEMENTATION.
+
+  METHOD validateFlightDate.
+
+    CONSTANTS c_area TYPE string VALUE `FLIGHTDATE`.
+
+    READ ENTITIES OF z980_r_travel IN LOCAL MODE
+      ENTITY Item
+      FIELDS ( AgencyId TravelId FlightDate )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(items).
+
+    LOOP AT items ASSIGNING FIELD-SYMBOL(<item>).
+
+      APPEND VALUE #( %tky        = <item>-%tky
+                      %state_area = c_area ) TO reported-item.
+
+      IF <item>-FlightDate IS INITIAL.
+        APPEND VALUE #( %tky = <item>-%tky ) TO failed-item.
+
+        APPEND VALUE #( %tky               = <item>-%tky
+                        %msg               = NEW zcm_980_travel(
+                                               textid   = zcm_980_travel=>field_empty
+                                               severity = if_abap_behv_message=>severity-error
+                                               field_name = 'Flight Date' )
+                        %element-FlightDate = if_abap_behv=>mk-on
+                        %state_area         = c_area
+                        %path-travel = CORRESPONDING #( <item> ) ) TO reported-item.
+
+      ELSEIF <item>-FlightDate < cl_abap_context_info=>get_system_date( ).
+        APPEND VALUE #( %tky = <item>-%tky ) TO failed-item.
+
+        APPEND VALUE #( %tky               = <item>-%tky
+                        %msg               = NEW zcm_980_travel(
+                                               textid     = zcm_980_travel=>flight_date_past
+                                               severity   = if_abap_behv_message=>severity-error
+                                               flight_date = <item>-FlightDate )
+                        %element-FlightDate = if_abap_behv=>mk-on
+                        %state_area         = c_area
+                        %path-travel = CORRESPONDING #( <item> ) ) TO reported-item.
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD determineTravelDates.
+
+    READ ENTITIES OF z980_r_travel IN LOCAL MODE
+      ENTITY Item
+      FIELDS ( AgencyId TravelId FlightDate )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(items)
+      BY \_Travel
+          FIELDS ( BeginDate EndDate )
+          WITH CORRESPONDING #( keys )
+          RESULT DATA(travels)
+          LINK DATA(link).
+
+    LOOP AT items ASSIGNING FIELD-SYMBOL(<item>).
+
+*      ASSIGN travels[ %tky = link[ source-%tky = <item>-%tky ]-target-%tky ]
+*          TO FIELD-SYMBOL(<travel>).
+
+*      READ TABLE travels ASSIGNING FIELD-SYMBOL(<travel>)
+*            WITH KEY %tky = link[ source-%tky = <item>-%tky ]-target-%tky.
+*
+
+      ASSIGN travels[ KEY id %tky =
+        link[ KEY id source-%tky = <item>-%tky ]-target-%tky ]
+          TO FIELD-SYMBOL(<travel>).
+
+      IF <travel>-EndDate < <item>-FlightDate.
+        <travel>-EndDate = <item>-FlightDate.
+      ENDIF.
+
+      IF <item>-FlightDate > cl_abap_context_info=>get_system_date( )
+        AND <item>-FlightDate  < <travel>-BeginDate.
+        <travel>-BeginDate = <item>-FlightDate.
+      ENDIF.
+
+    ENDLOOP.
+
+    MODIFY ENTITIES OF Z980_R_Travel IN LOCAL MODE
+      ENTITY Travel
+        UPDATE
+        FIELDS ( BeginDate EndDate )
+        WITH CORRESPONDING #( travels ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
@@ -171,7 +274,8 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky                 = <travel>-%tky
                         %msg                 = NEW zcm_980_travel(
                                                  textid   = zcm_980_travel=>field_empty
-                                                 severity = if_abap_behv_message=>severity-error )
+                                                 severity = if_abap_behv_message=>severity-error
+                                                 field_name = 'Description' )
                         %element-Description = if_abap_behv=>mk-on
                         %state_area         = c_area ) TO reported-travel.
       ENDIF.
@@ -215,7 +319,8 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky                = <travel>-%tky
                         %msg                = NEW zcm_980_travel(
                                                 textid   = zcm_980_travel=>field_empty
-                                                severity = if_abap_behv_message=>severity-error )
+                                                severity = if_abap_behv_message=>severity-error
+                                                field_name = 'Customer ID' )
                         %element-CustomerId = if_abap_behv=>mk-on
                         %state_area         = c_area ) TO reported-travel.
       ELSE.
@@ -260,7 +365,8 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky               = <travel>-%tky
                         %msg               = NEW zcm_980_travel(
                                                textid   = zcm_980_travel=>field_empty
-                                               severity = if_abap_behv_message=>severity-error )
+                                               severity = if_abap_behv_message=>severity-error
+                                               field_name = 'BStarting Date' )
                         %element-BeginDate = if_abap_behv=>mk-on
                         %state_area         = c_area ) TO reported-travel.
 
@@ -279,7 +385,7 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
 
-   METHOD validateEndDate.
+  METHOD validateEndDate.
     CONSTANTS c_area TYPE string VALUE `ENDDATE`.
 
     READ ENTITIES OF z980_r_travel IN LOCAL MODE
@@ -300,7 +406,8 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky             = <travel>-%tky
                         %msg             = NEW zcm_980_travel(
                                                textid   = zcm_980_travel=>field_empty
-                                               severity = if_abap_behv_message=>severity-error )
+                                               severity = if_abap_behv_message=>severity-error
+                                               field_name = 'End Date' )
                         %element-EndDate = if_abap_behv=>mk-on
                         %state_area      = c_area ) TO reported-travel.
 

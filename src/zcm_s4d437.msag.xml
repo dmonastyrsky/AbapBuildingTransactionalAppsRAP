@@ -18,7 +18,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZCM_S4D437</ARBGB>
      <MSGNR>002</MSGNR>
-     <TEXT>Customer ID is mandatory.</TEXT>
+     <TEXT>&amp;1 is mandatory</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -43,6 +43,12 @@
      <ARBGB>ZCM_S4D437</ARBGB>
      <MSGNR>006</MSGNR>
      <TEXT>Begin date &amp;1 must be before end date &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_S4D437</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Flight date &amp;1 cannot be in the past</TEXT>
     </T100>
    </T100>
   </asx:values>

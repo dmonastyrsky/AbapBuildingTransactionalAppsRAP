@@ -24,7 +24,7 @@ CLASS zcm_980_travel DEFINITION
       BEGIN OF field_empty,
         msgid TYPE symsgid      VALUE 'ZCM_S4D437',
         msgno TYPE symsgno      VALUE '002',
-        attr1 TYPE scx_attrname VALUE '',
+        attr1 TYPE scx_attrname VALUE 'FIELD_NAME',
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
@@ -57,7 +57,6 @@ CLASS zcm_980_travel DEFINITION
         attr4 TYPE scx_attrname VALUE '',
       END OF end_date_past,
 
-      " Fixed syntax: replaced dot with comma below to prevent compilation error
       BEGIN OF dates_wrong_sequence,
         msgid TYPE symsgid      VALUE 'ZCM_S4D437',
         msgno TYPE symsgno      VALUE '006',
@@ -65,22 +64,35 @@ CLASS zcm_980_travel DEFINITION
         attr2 TYPE scx_attrname VALUE 'BEGIN_DATE',  " Fixed: Maps BeginDate to &2
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF dates_wrong_sequence.
+      END OF dates_wrong_sequence,
+
+      BEGIN OF flight_date_past,
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '007',
+        attr1 TYPE scx_attrname VALUE 'FLIGHT_DATE', " Fixed: Points to flight_date attribute
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF flight_date_past.
 
     " Clean, standard context data placeholders (Must be UPPERCASE for T100 mapping)
-    DATA travel_id   TYPE /dmo/travel_id .
-    DATA customer_id TYPE /dmo/customer_id .
-    DATA begin_date  TYPE /dmo/begin_date .
-    DATA end_date    TYPE /dmo/end_date .
+    DATA travel_id   TYPE /dmo/travel_id.
+    DATA customer_id TYPE /dmo/customer_id.
+    DATA begin_date  TYPE /dmo/begin_date.
+    DATA end_date    TYPE /dmo/end_date.
+    DATA flight_date TYPE /dmo/flight_date.
+    DATA field_name TYPE string.
 
     METHODS constructor
       IMPORTING
         textid      LIKE if_t100_message=>t100key          OPTIONAL
-        severity    LIKE if_abap_behv_message~m_severity OPTIONAL
+        severity    LIKE if_abap_behv_message~m_severity   OPTIONAL
         travel_id   TYPE /dmo/travel_id                    OPTIONAL
         customer_id TYPE /dmo/customer_id                  OPTIONAL
         begin_date  TYPE /dmo/begin_date                   OPTIONAL
-        end_date    TYPE /dmo/end_date                     OPTIONAL.
+        end_date    TYPE /dmo/end_date                     OPTIONAL
+        flight_date TYPE /dmo/flight_date                  OPTIONAL
+        field_name  TYPE string                            OPTIONAL.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -109,8 +121,10 @@ CLASS zcm_980_travel IMPLEMENTATION.
     " Save dynamic context data using clean assignment
     me->travel_id   = travel_id.
     me->customer_id = customer_id.
-    me->begin_date  = begin_date.  " Saved field
-    me->end_date    = end_date.    " Saved field
+    me->begin_date  = begin_date.
+    me->end_date    = end_date.
+    me->flight_date = flight_date.
+    me->field_name  = field_name.
 
   ENDMETHOD.
 ENDCLASS.
