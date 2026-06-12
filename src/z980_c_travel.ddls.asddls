@@ -43,5 +43,6 @@ define root view entity Z980_C_TRAVEL
       LocalLastChangedAt,
       LastChangedAt,
       _BaseEntity,
-      _Customer
+      _Customer,
+      _TravelItem : redirected to composition child Z980_C_TravelItem
 }

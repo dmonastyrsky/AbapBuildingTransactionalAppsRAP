@@ -21,6 +21,8 @@ use etag
   use action Prepare;
   use action Resume;
 
+  use association _TravelItem { create; with draft; }
+
   side effects
   {
     determine action checkCustomer
@@ -32,4 +34,12 @@ use etag
       affects field Duration, messages;
   }
 
+}
+
+define behavior for Z980_C_TravelItem
+use etag
+{
+  use update;
+  use delete;
+  use association _Travel { with draft; }
 }
