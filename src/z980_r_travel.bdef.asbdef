@@ -112,8 +112,10 @@ early numbering
 }
 
 define behavior for Z980_R_TRAVELITEM alias Item
-persistent table z980_tritem
+//persistent table z980_tritem ##UNMAPPED_FIELD
 draft table z980_tritem_d
+//with additional save
+with unmanaged save
 authorization dependent by _Travel
 lock dependent by _Travel
 etag master LocalLastChangedAt
@@ -139,19 +141,39 @@ etag master LocalLastChangedAt
   { field FlightDate;
   }
 
-  mapping for z980_tritem corresponding
-    {
-      ItemUuid           = item_uuid;
-      AgencyId           = agency_id;
-      TravelId           = travel_id;
-      CarrierId          = carrier_id;
-      ConnectionId       = connection_id;
-      FlightDate         = flight_date;
-      BookingId          = booking_id;
-      PassengerFirstName = passenger_first_name;
-      PassengerLastName  = passenger_last_name;
-      LocalLastChangedBy = local_last_changed_by;
-      LocalLastChangedAt = local_last_changed_at;
-      LastChangedAt      = last_changed_at;
-    }
+//  mapping for z980_tritem corresponding
+//    {
+//      ItemUuid           = item_uuid;
+//      AgencyId           = agency_id;
+//      TravelId           = travel_id;
+//      CarrierId          = carrier_id;
+//      ConnectionId       = connection_id;
+//      FlightDate         = flight_date;
+//      BookingId          = booking_id;
+//      PassengerFirstName = passenger_first_name;
+//      PassengerLastName  = passenger_last_name;
+//      LocalLastChangedBy = local_last_changed_by;
+//      LocalLastChangedAt = local_last_changed_at;
+//      LastChangedAt      = last_changed_at;
+//    }
+
+  mapping for z980_s_tritem control z980_s_tritemx corresponding
+  {
+    ItemUuid           = item_uuid;
+    AgencyId           = agency_id;
+    TravelId           = travel_id;
+    CarrierId          = carrier_id;
+    ConnectionId       = connection_id;
+    FlightDate         = flight_date;
+    BookingId          = booking_id;
+    PassengerFirstName = passenger_first_name;
+    PassengerLastName  = passenger_last_name;
+
+    // Adapted administrative fields from your z980_s_admin structure
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LocalLastChangedBy = local_last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+    LastChangedAt      = last_changed_at;
+  }
 }
