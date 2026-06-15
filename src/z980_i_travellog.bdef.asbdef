@@ -1,0 +1,23 @@
+managed implementation in class zbp_980_i_travellog unique;
+strict ( 2 );
+
+define behavior for Z980_I_TRAVELLOG alias TravelLog
+persistent table z980_travellog ##UNMAPPED_FIELD
+lock master
+authorization master ( instance )
+{
+  create;
+
+  field ( readonly, numbering : managed ) LogUuid;
+  field ( readonly ) CreatedAt;
+
+  mapping for z980_travellog corresponding
+  {
+    LogUuid   = log_uuid;
+    AgencyID  = agency_id;
+    TravelID  = travel_id;
+    Origin    = origin;
+    CreatedAt = created_at;
+  }
+
+}

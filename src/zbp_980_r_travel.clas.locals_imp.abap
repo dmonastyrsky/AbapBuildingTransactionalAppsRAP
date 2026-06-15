@@ -57,6 +57,11 @@ CLASS lsc_z980_r_travel IMPLEMENTATION.
 
     ENDLOOP.
 
+    IF create-travel IS NOT INITIAL.
+      RAISE ENTITY EVENT Z980_R_Travel~TravelCreated
+        FROM CORRESPONDING #( create-travel ) .
+    ENDIF.
+
   ENDMETHOD.
 
   METHOD map_message.

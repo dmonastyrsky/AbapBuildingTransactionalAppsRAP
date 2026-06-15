@@ -11,12 +11,14 @@ total etag LastChangedAt
 authorization master ( instance )
 etag master LocalLastChangedAt //LastChangedAt
 early numbering
+with additional save
 {
   create ( authorization : global );
   update;
   delete;
 
   action cancel_travel;
+  event TravelCreated;
 
   association _TravelItem { create; with draft; }
 
