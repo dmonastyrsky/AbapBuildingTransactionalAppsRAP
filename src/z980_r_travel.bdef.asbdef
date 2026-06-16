@@ -18,7 +18,7 @@ with additional save
   delete;
 
   action cancel_travel;
-  event TravelCreated;
+  event TravelCreated parameter Z980_A_Event;
 
   association _TravelItem { create; with draft; }
 

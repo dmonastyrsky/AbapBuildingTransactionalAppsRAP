@@ -50,17 +50,24 @@ CLASS lsc_z980_r_travel IMPLEMENTATION.
       ).
 
       IF msg_u IS NOT INITIAL.
-          APPEND VALUE #( %tky-itemuuid = <item_u>-itemuuid
-                          %msg          = map_message( msg_u ) )
-            TO reported-item.
-        ENDIF.
+        APPEND VALUE #( %tky-itemuuid = <item_u>-itemuuid
+                        %msg          = map_message( msg_u ) )
+          TO reported-item.
+      ENDIF.
 
     ENDLOOP.
 
     IF create-travel IS NOT INITIAL.
       RAISE ENTITY EVENT Z980_R_Travel~TravelCreated
-        FROM CORRESPONDING #( create-travel ) .
+        FROM VALUE #( FOR <new_travel> IN create-travel
+                        (
+                          AgencyId = <new_travel>-AgencyId
+                          TravelId = <new_travel>-TravelId
+                          origin   = 'Z980_R_TRAVEL'
+                        )
+                    ).
     ENDIF.
+
 
   ENDMETHOD.
 
