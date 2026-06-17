@@ -2,6 +2,13 @@ managed implementation in class zbp_980_r_travel unique;
 strict ( 2 );
 
 with draft;
+extensible
+{
+ with additional save;
+ with validations on save;
+ with determinations on modify;
+ with determinations on save;
+}
 
 define behavior for Z980_R_TRAVEL alias Travel
 persistent table z980_travel ##UNMAPPED_FIELD
@@ -12,6 +19,7 @@ authorization master ( instance )
 etag master LocalLastChangedAt //LastChangedAt
 early numbering
 with additional save
+extensible
 {
   create ( authorization : global );
   update;
@@ -89,6 +97,7 @@ with additional save
   draft action Discard;
   draft action Resume;
   draft determine action Prepare
+  extensible
   {
     validation validateDescription;
     validation validateCustomer;
@@ -98,7 +107,7 @@ with additional save
     validation Item~validateFlightDate;
   }
 
-  mapping for z980_travel corresponding
+  mapping for z980_travel corresponding ##unextensible_mapping
     {
       AgencyID           = agency_ID;
       TravelID           = travel_id;
@@ -121,6 +130,7 @@ with unmanaged save
 authorization dependent by _Travel
 lock dependent by _Travel
 etag master LocalLastChangedAt
+extensible
 {
   update;
   delete;
@@ -143,7 +153,7 @@ etag master LocalLastChangedAt
   { field FlightDate;
   }
 
-//  mapping for z980_tritem corresponding
+//  mapping for z980_tritem corresponding ##unextensible_mapping
 //    {
 //      ItemUuid           = item_uuid;
 //      AgencyId           = agency_id;
@@ -159,7 +169,7 @@ etag master LocalLastChangedAt
 //      LastChangedAt      = last_changed_at;
 //    }
 
-  mapping for z980_s_tritem control z980_s_tritemx corresponding
+  mapping for z980_s_tritem control z980_s_tritemx corresponding ##unextensible_mapping
   {
     ItemUuid           = item_uuid;
     AgencyId           = agency_id;

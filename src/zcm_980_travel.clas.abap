@@ -73,7 +73,16 @@ CLASS zcm_980_travel DEFINITION
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF flight_date_past.
+      END OF flight_date_past,
+
+      BEGIN OF class_not_exist,
+        msgid TYPE symsgid      VALUE 'ZCM_S4D437',
+        msgno TYPE symsgno      VALUE '008',
+        attr1 TYPE scx_attrname VALUE 'BOOKING_CLASS',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF class_not_exist.
 
     " Clean, standard context data placeholders (Must be UPPERCASE for T100 mapping)
     DATA travel_id   TYPE /dmo/travel_id.
@@ -81,7 +90,8 @@ CLASS zcm_980_travel DEFINITION
     DATA begin_date  TYPE /dmo/begin_date.
     DATA end_date    TYPE /dmo/end_date.
     DATA flight_date TYPE /dmo/flight_date.
-    DATA field_name TYPE string.
+    DATA field_name     TYPE string.
+    DATA booking_class  TYPE z980_class_id.
 
     METHODS constructor
       IMPORTING
@@ -92,7 +102,8 @@ CLASS zcm_980_travel DEFINITION
         begin_date  TYPE /dmo/begin_date                   OPTIONAL
         end_date    TYPE /dmo/end_date                     OPTIONAL
         flight_date TYPE /dmo/flight_date                  OPTIONAL
-        field_name  TYPE string                            OPTIONAL.
+        field_name  TYPE string                            OPTIONAL
+        booking_class TYPE z980_class_id                   OPTIONAL.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -125,6 +136,7 @@ CLASS zcm_980_travel IMPLEMENTATION.
     me->end_date    = end_date.
     me->flight_date = flight_date.
     me->field_name  = field_name.
+    me->booking_class = booking_class.
 
   ENDMETHOD.
 ENDCLASS.

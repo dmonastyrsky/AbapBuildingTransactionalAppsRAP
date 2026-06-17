@@ -50,6 +50,12 @@
      <MSGNR>007</MSGNR>
      <TEXT>Flight date &amp;1 cannot be in the past</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_S4D437</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Booking Class &amp;1 does not exist</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

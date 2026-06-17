@@ -4,6 +4,8 @@ strict ( 2 );
 use draft;
 use side effects;
 
+extensible;
+
 define behavior for Z980_C_TRAVEL //alias <alias_name>
 use etag
 {
@@ -38,6 +40,7 @@ use etag
 
 define behavior for Z980_C_TravelItem
 use etag
+extensible
 {
   use update;
   use delete;

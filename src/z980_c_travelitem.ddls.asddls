@@ -2,9 +2,15 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @Metadata.allowExtensions: true
 @AbapCatalog.viewEnhancementCategory: [#PROJECTION_LIST]
+@AbapCatalog.extensibility: {
+  extensible: true,
+  allowNewDatasources: false,
+  dataSources: ['Item'],
+  elementSuffix: 'ZIT'
+}
 define view entity Z980_C_TravelItem
 //  provider contract transactional_query
-  as projection on Z980_R_TRAVELITEM
+  as projection on Z980_R_TRAVELITEM as Item
 {
   key ItemUuid,
       AgencyId,
